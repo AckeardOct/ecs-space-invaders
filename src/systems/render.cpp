@@ -42,8 +42,8 @@ void SpriteRendSys::update(entt::registry &reg, SDL_Renderer &sdl_renderer)
         auto& posCmp  = view.get<PositionCmp>(ent);
         auto& spriteCmp = view.get<SpriteRendCmp>(ent);
 
-        rect.w = (int)posCmp.size.x;
-        rect.h = (int)posCmp.size.y;
+        rect.w = (int)(posCmp.size.x * spriteCmp.scale.x);
+        rect.h = (int)(posCmp.size.y * spriteCmp.scale.y);
         rect.x = (int)posCmp.pos.x - rect.w / 2;
         rect.y = (int)posCmp.pos.y - rect.h / 2;
 

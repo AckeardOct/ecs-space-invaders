@@ -14,12 +14,14 @@ add_subdirectory(src/common)
 add_subdirectory(src/components)
 add_subdirectory(src/scenes)
 add_subdirectory(src/systems)
+add_subdirectory(src/ents)
 
 set(my-libs
     common
     components
     scenes
     systems
+    ents
 )
 
 set(sources

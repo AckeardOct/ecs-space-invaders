@@ -8,6 +8,7 @@
 class PositionCmp;
 class MoveCmp;
 
+
 class IBasicSys
 {
 public:
@@ -29,11 +30,19 @@ private:
 };
 
 
+class InertionSys : public IBasicSys
+{
+public: // IBasicSys interface
+    virtual void update(entt::registry &reg, float dt) override;
+};
+
+
 class CollisionSys : public IBasicSys
 {
 public: // IBasicSys interface
     virtual void update(entt::registry &reg, float dt) override;
 
 private:
-    void resolveStaticShift(PositionCmp& staticPos, PositionCmp& shiftPos, MoveCmp& shiftMove);
+    bool isIntesects(PositionCmp& onePos, PositionCmp& twoPos);
+    void resolveStaticShift(PositionCmp& staticPos, PositionCmp& shiftPos, MoveCmp& shiftMove);    
 };

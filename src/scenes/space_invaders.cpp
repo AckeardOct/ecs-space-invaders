@@ -3,6 +3,8 @@
 #include <components/render.h>
 #include <systems/basic.h>
 #include <systems/render.h>
+#include <ents/space_invaders.h>
+
 
 SpaceInvaders::SpaceInvaders(GameWindow &window)
     : IScene(window)
@@ -43,6 +45,7 @@ void SpaceInvaders::initBasicSystems()
     inputSystem = new InputSys();
     basicSystems.push_back(inputSystem);
     basicSystems.push_back(new CollisionSys());
+    basicSystems.push_back(new InertionSys());
 }
 
 
@@ -59,58 +62,38 @@ void SpaceInvaders::initEntities()
     glm::vec2 winCenter = winSize / 2.f;
 
     { // defender
-        glm::vec2 size(50, 50);
+        glm::vec2 size(30, 30);
+        glm::vec2 pos(winCenter.x, winSize.y - size.y/1.5f);
+        glm::vec2 direction(0.f, -1.f);
         glm::vec2 speed(150, 150);
-        glm::vec2 pos = winCenter;
         glm::ivec4 borderColor(255, 0, 0, 255);
         auto spritePath = "resources/images/pixel_ship.png";
         auto entity = reg.create();
-        reg.assign<PositionCmp>(entity, pos, size);
-        reg.assign<RectRendCmp>(entity, borderColor);
+        reg.assign<PositionCmp>(entity, pos, size, direction);
+        //reg.assign<RectRendCmp>(entity, borderColor);
         reg.assign<SpriteRendCmp>(entity, spritePath);
         reg.assign<MoveCmp>(entity, speed);
         reg.assign<ShiftCollisionCmp>(entity);
+        reg.assign<InputableCmp>(entity);
+        reg.assign<GunCmp>(entity);
     }
 
-    // borders
-    {
+
+    { // walls
+        WallTpl wall;
         // left
-        glm::vec2 size(1, winSize.y);
-        glm::vec2 pos(0, winCenter.y);
-        glm::ivec4 borderColor(255, 0, 0, 255);
-        auto entity = reg.create();
-        reg.assign<PositionCmp>(entity, pos, size);
-        //reg.assign<RectRendCmp>(entity, borderColor, borderColor);
-        reg.assign<StaticCollisionCmp>(entity);
-    }
-    {
+        wall.size = glm::vec2(1, winSize.y);
+        wall.pos  = glm::vec2(0, winCenter.y);
+        wall.makeEntity(reg);
         // right
-        glm::vec2 size(1, winSize.y);
-        glm::vec2 pos(winSize.x, winCenter.y);
-        glm::ivec4 borderColor(255, 0, 0, 255);
-        auto entity = reg.create();
-        reg.assign<PositionCmp>(entity, pos, size);
-        //reg.assign<RectRendCmp>(entity, borderColor, borderColor);
-        reg.assign<StaticCollisionCmp>(entity);
-    }
-    {
+        wall.pos = glm::vec2(winSize.x, winCenter.y);
+        wall.makeEntity(reg);
         // top
-        glm::vec2 size(winSize.x, 1);
-        glm::vec2 pos(winCenter.x, 0);
-        glm::ivec4 borderColor(255, 0, 0, 255);
-        auto entity = reg.create();
-        reg.assign<PositionCmp>(entity, pos, size);
-        //reg.assign<RectRendCmp>(entity, borderColor, borderColor);
-        reg.assign<StaticCollisionCmp>(entity);
-    }
-    {
+        wall.size = glm::vec2(winSize.x, 1);
+        wall.pos  = glm::vec2(winCenter.x, 0);
+        wall.makeEntity(reg);
         // bottom
-        glm::vec2 size(winSize.x, 1);
-        glm::vec2 pos(winCenter.x, winSize.y);
-        glm::ivec4 borderColor(255, 0, 0, 255);
-        auto entity = reg.create();
-        reg.assign<PositionCmp>(entity, pos, size);
-        //reg.assign<RectRendCmp>(entity, borderColor, borderColor);
-        reg.assign<StaticCollisionCmp>(entity);
-    }
+        wall.pos  = glm::vec2(winCenter.x, winSize.y);
+        wall.makeEntity(reg);
+    }    
 }
