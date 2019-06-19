@@ -62,22 +62,12 @@ void SpaceInvaders::initEntities()
     glm::vec2 winCenter = winSize / 2.f;
 
     { // defender
-        glm::vec2 size(30, 30);
-        glm::vec2 pos(winCenter.x, winSize.y - size.y/1.5f);
-        glm::vec2 direction(0.f, -1.f);
-        glm::vec2 speed(150, 150);
-        glm::ivec4 borderColor(255, 0, 0, 255);
-        auto spritePath = "resources/images/pixel_ship.png";
-        auto entity = reg.create();
-        reg.assign<PositionCmp>(entity, pos, size, direction);
-        //reg.assign<RectRendCmp>(entity, borderColor);
-        reg.assign<SpriteRendCmp>(entity, spritePath);
-        reg.assign<MoveCmp>(entity, speed);
-        reg.assign<ShiftCollisionCmp>(entity);
-        reg.assign<InputableCmp>(entity);
-        reg.assign<GunCmp>(entity);
+        ShipTpl ship;
+        ship.size = glm::vec2(30, 30);
+        ship.pos = glm::vec2(winCenter.x, winSize.y - ship.size.y/1.5f);
+        ship.direction = glm::vec2(0.f, -1.f);
+        ship.makeEntity(reg);
     }
-
 
     { // walls
         WallTpl wall;
