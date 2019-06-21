@@ -44,5 +44,6 @@ public: // IBasicSys interface
 
 private:
     bool isIntesects(PositionCmp& onePos, PositionCmp& twoPos);
-    void resolveStaticShift(PositionCmp& staticPos, PositionCmp& shiftPos, MoveCmp& shiftMove);    
+    void resolveStaticShift(PositionCmp& staticPos, PositionCmp& shiftPos, MoveCmp& shiftMove);
+    void resolveShiftShift(PositionCmp& onePos, MoveCmp& oneMove, PositionCmp& twoPos, MoveCmp& twoMove);
 };

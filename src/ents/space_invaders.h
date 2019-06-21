@@ -25,6 +25,19 @@ struct ShipTpl : public IAbstractEnt
 };
 
 
+struct InavaderTpl : public IAbstractEnt
+{
+    glm::vec2   size        {0, 0};
+    glm::vec2   pos         {0, 0};
+    glm::vec2   direction   {0, 0};
+    glm::vec2   speed       {150, 150};
+    glm::ivec4  borderColor {255, 0, 0, 255};
+    const char* spritePath  {"resources/images/pixel_ship_red_small_2.png"};
+
+    virtual void makeEntity(entt::registry &reg) override;
+};
+
+
 struct WallTpl : public IAbstractEnt
 {
     glm::vec2  size        {0, 0};

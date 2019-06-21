@@ -69,6 +69,14 @@ void SpaceInvaders::initEntities()
         ship.makeEntity(reg);
     }
 
+    { // invaders
+        InavaderTpl invader;
+        invader.size = glm::vec2(30, 30);
+        invader.pos = winCenter;
+        invader.direction = glm::vec2(0.f, 1.f);
+        invader.makeEntity(reg);
+    }
+
     { // walls
         WallTpl wall;
         // left

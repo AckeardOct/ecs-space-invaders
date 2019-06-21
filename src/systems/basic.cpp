@@ -5,6 +5,7 @@
 #include <ents/space_invaders.h>
 
 #include <glm/glm.hpp>
+#include <set>
 
 
 void InputSys::onInput(const SDL_Event &event)
@@ -67,6 +68,7 @@ void InputSys::update(entt::registry &reg, float dt)
                 BulletTpl bullet;
                 bullet.pos = posCmp.pos;
                 bullet.pos += posCmp.direction * (bullet.size/2.f + posCmp.size/2.f);
+                bullet.pos += posCmp.direction * (bullet.size/2.f + posCmp.size/2.f);
                 bullet.direction = posCmp.direction;
                 bullet.makeEntity(reg);
             }
@@ -91,9 +93,33 @@ void InertionSys::update(entt::registry &reg, float dt)
 
 void CollisionSys::update(entt::registry &reg, float dt)
 {
+    std::set<unsigned int> needDelete;
+
     auto staticView = reg.view<PositionCmp, StaticCollisionCmp>();
     auto shiftView = reg.view<PositionCmp, ShiftCollisionCmp, MoveCmp>();
     auto oneShotView = reg.view<PositionCmp, OneShotCollisionCmp>();
+
+    for (auto shiftEntOne : shiftView) {
+        PositionCmp& onePosCmp = shiftView.get<PositionCmp>(shiftEntOne);
+        MoveCmp& oneMoveCmp = shiftView.get<MoveCmp>(shiftEntOne);
+        for (auto shiftEntTwo : shiftView) {
+            if (shiftEntOne == shiftEntTwo) {
+                continue;
+            }
+            PositionCmp& twoPosCmp = shiftView.get<PositionCmp>(shiftEntTwo);
+            MoveCmp& twoMoveCmp = shiftView.get<MoveCmp>(shiftEntTwo);
+            resolveShiftShift(onePosCmp, oneMoveCmp, twoPosCmp, twoMoveCmp);
+        }
+
+        for (auto oneShotEnt : oneShotView) {
+            PositionCmp& oneShotPosCmp = oneShotView.get<PositionCmp>(oneShotEnt);
+            if (isIntesects(onePosCmp, oneShotPosCmp)) {
+                reg.destroy(oneShotEnt);
+                reg.destroy(shiftEntOne);
+                continue;
+            }
+        }
+    }
 
     for (auto staticEnt : staticView) {
         PositionCmp& staticPosCmp = staticView.get<PositionCmp>(staticEnt);
@@ -108,8 +134,9 @@ void CollisionSys::update(entt::registry &reg, float dt)
             PositionCmp& oneShotPosCmp = oneShotView.get<PositionCmp>(oneShotEnt);
             if (isIntesects(staticPosCmp, oneShotPosCmp)) {
                 reg.destroy(oneShotEnt);
+                continue;
             }
-        }
+        }                       
     }
 }
 
@@ -162,6 +189,36 @@ void CollisionSys::resolveStaticShift(PositionCmp &staticPos, PositionCmp &shift
         shiftMove.move(shiftPos, direction, dt);
         staticAABB = AABB(staticPos.pos, staticPos.size);
         shiftAABB  = AABB(shiftPos.pos, shiftPos.size);
+        count++;
+        assert(count < 1000);
+    }
+}
+
+
+void CollisionSys::resolveShiftShift(PositionCmp &onePos, MoveCmp &oneMove, PositionCmp &twoPos, MoveCmp &twoMove)
+{
+    AABB oneAABB(onePos.pos, onePos.size);
+    AABB twoAABB(twoPos.pos, twoPos.size);
+
+    if (! AABB::isIntersect(oneAABB, twoAABB)) {
+        return;
+    }
+
+    glm::vec2 oneDirection = onePos.oldPos - onePos.pos;
+    glm::normalize(oneDirection);
+    assert(oneDirection.length() > 1.5f);
+
+    glm::vec2 twoDirection = twoPos.oldPos - twoPos.pos;
+    glm::normalize(twoDirection);
+    assert(twoDirection.length() > 1.5f);
+
+    int count = 0;
+    while (AABB::isIntersect(oneAABB, twoAABB)) {
+        const float dt = 0.5f;
+        oneMove.move(onePos, oneDirection, dt);
+        oneMove.move(twoPos, twoDirection, dt);
+        oneAABB = AABB(onePos.pos, onePos.size);
+        twoAABB = AABB(twoPos.pos, twoPos.size);
         count++;
         assert(count < 1000);
     }
