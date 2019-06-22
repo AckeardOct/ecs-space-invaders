@@ -54,3 +54,10 @@ class SlayerSys : public IBasicSys
 public: // IBasicSys interface
     virtual void update(entt::registry &reg, float dt) override;
 };
+
+
+class AiRouteSys : public IBasicSys
+{
+public: // IBasicSys interface
+    virtual void update(entt::registry &reg, float dt) override;
+};

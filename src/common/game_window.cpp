@@ -17,14 +17,18 @@ const static struct {
 
 GameWindow::GameWindow(int argc, char **argv)
 {
-    this->initSDL();
-    textureBank = new TextureBank(*sdl_renderer);
-    scene       = new SpaceInvaders(*this);
-
     for (int i = 0; i < argc; i++) {
         std::string arg(argv[i]);
         needTests = (arg == "--test");
     }
+
+    this->initSDL();
+    if (needTests) {
+        internalTests();
+    }
+
+    textureBank = new TextureBank(*sdl_renderer);
+    scene       = new SpaceInvaders(*this);
 }
 
 
@@ -42,10 +46,6 @@ GameWindow::~GameWindow()
 
 void GameWindow::runLoop()
 {
-    if (needTests) {
-        internalTests();
-    }
-
     const float frameLength_ms = 1000.f / SETTINGS.fps;
     float dt = 0;
     uint32_t time_ms = SDL_GetTicks();

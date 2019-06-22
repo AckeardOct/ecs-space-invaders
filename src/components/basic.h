@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/vec2.hpp>
+#include <vector>
 
 struct PositionCmp {    
     glm::vec2 pos;
@@ -51,6 +52,15 @@ struct ShiftCollisionCmp {
 
 
 struct OneShotCollisionCmp {
+};
+
+
+struct AiRouteCmp {
+    std::vector<glm::vec2> points;
+
+    AiRouteCmp(std::vector<glm::vec2>& points)
+        : points(points)
+    { }
 };
 
 

@@ -1,7 +1,8 @@
 #include "basic.h"
+#include <common/logger.h>
+#include <common/utils.h>
 #include <components/basic.h>
 #include <components/render.h>
-#include <common/logger.h>
 #include <ents/space_invaders.h>
 
 #include <glm/glm.hpp>
@@ -180,6 +181,7 @@ void CollisionSys::resolveStaticShift(PositionCmp &staticPos, PositionCmp &shift
     glm::normalize(direction);
     assert(direction.length() > 1.5f);
 
+    const int maxTries = 1000;
     int count = 0;
     while (AABB::isIntersect(staticAABB, shiftAABB)) {
         const float dt = 1.f;
@@ -187,7 +189,10 @@ void CollisionSys::resolveStaticShift(PositionCmp &staticPos, PositionCmp &shift
         staticAABB = AABB(staticPos.pos, staticPos.size);
         shiftAABB  = AABB(shiftPos.pos, shiftPos.size);
         count++;
-        assert(count < 1000);
+        if (count > maxTries) {
+            LogCritical("Can't resolve collision");
+            break;
+        }
     }
 }
 
@@ -209,6 +214,7 @@ void CollisionSys::resolveShiftShift(PositionCmp &onePos, MoveCmp &oneMove, Posi
     glm::normalize(twoDirection);
     assert(twoDirection.length() > 1.5f);
 
+    const int maxTries = 1000;
     int count = 0;
     while (AABB::isIntersect(oneAABB, twoAABB)) {
         const float dt = 0.5f;
@@ -217,12 +223,41 @@ void CollisionSys::resolveShiftShift(PositionCmp &onePos, MoveCmp &oneMove, Posi
         oneAABB = AABB(onePos.pos, onePos.size);
         twoAABB = AABB(twoPos.pos, twoPos.size);
         count++;
-        assert(count < 1000);
+        if (count > maxTries) {
+            LogCritical("Can't resolve collision");
+            break;
+        }
     }
 }
+
 
 void SlayerSys::update(entt::registry &reg, float dt)
 {
     auto view = reg.view<DeadCmp>();
     reg.destroy(view.begin(), view.end());
+}
+
+
+void AiRouteSys::update(entt::registry &reg, float dt)
+{
+    auto view = reg.view<PositionCmp, AiRouteCmp, MoveCmp>();
+
+    for (auto ent : view) {
+        AiRouteCmp& routeCmp = view.get<AiRouteCmp>(ent);
+        MoveCmp& moveCmp = view.get<MoveCmp>(ent);
+        PositionCmp& posCmp = view.get<PositionCmp>(ent);
+
+        while (!routeCmp.points.empty()) {
+            const glm::vec2& destination = routeCmp.points.back();
+            glm::vec2 direction = posCmp.pos - destination;
+            if (Ut::calcLength(direction) < 1.4f) {
+                routeCmp.points.pop_back();
+                continue;
+            }
+            direction = glm::normalize(direction);
+            direction *= -1;
+            moveCmp.move(posCmp, direction, dt);
+            break;
+        }
+    }
 }

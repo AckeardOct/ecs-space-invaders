@@ -28,6 +28,7 @@ void InavaderTpl::makeEntity(entt::registry &reg)
     reg.assign<ShiftCollisionCmp>(entity);
     //reg.assign<InputableCmp>(entity);
     reg.assign<GunCmp>(entity);
+    reg.assign<AiRouteCmp>(entity, movePoints);
 }
 
 

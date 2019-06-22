@@ -24,11 +24,17 @@ float Ut::toRad(float deg)
 }
 
 
+float Ut::calcLength(glm::vec2 vec)
+{
+    return std::sqrt(std::pow(vec.x, 2) + std::pow(vec.y, 2));
+}
+
+
 float Ut::calcAngle(glm::vec2 one, glm::vec2 two)
 {
     float scalar = (one.x * two.x) + (one.y * two.y);
-    float oneLength = std::sqrt(std::pow(one.x, 2) + std::pow(one.y, 2));
-    float twoLength = std::sqrt(std::pow(two.x, 2) + std::pow(two.y, 2));
+    float oneLength = calcLength(one);
+    float twoLength = calcLength(two);
     float cosPhi = scalar / (oneLength * twoLength);
     return std::acos(cosPhi);
 }
@@ -57,6 +63,18 @@ void Ut::tests()
         assert(Ut::equal(Ut::toRad(45.f), M_PI_4));
     }
 
+    // calcLength
+    {
+        glm::vec2 vec(0, 0);
+        float length = Ut::calcLength(vec);
+        assert(Ut::equal(length, 0.f));
+    }
+    {
+        glm::vec2 vec(0, 2);
+        float length = Ut::calcLength(vec);
+        assert(Ut::equal(length, 2.f));
+    }
+
     // calcAngle
     {
         glm::vec2 one(0, -1);
@@ -83,4 +101,3 @@ void Ut::tests()
         assert(Ut::equal(angle, 3 * M_PI_4));
     }
 }
-

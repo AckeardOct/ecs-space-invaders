@@ -1,4 +1,5 @@
 #include "space_invaders.h"
+#include <common/logger.h>
 #include <components/basic.h>
 #include <components/render.h>
 #include <systems/basic.h>
@@ -46,6 +47,7 @@ void SpaceInvaders::initBasicSystems()
     basicSystems.push_back(inputSystem);
     basicSystems.push_back(new CollisionSys());
     basicSystems.push_back(new InertionSys());
+    basicSystems.push_back(new AiRouteSys());
 
     basicSystems.push_back(new SlayerSys());
 }
@@ -74,11 +76,34 @@ void SpaceInvaders::initEntities()
     { // invaders
         InavaderTpl invader;
         invader.size = glm::vec2(30, 30);
-        invader.pos = winCenter;
         invader.direction = glm::vec2(0.f, 1.f);
-        invader.makeEntity(reg);
-        invader.pos = winCenter / 4.f;
-        invader.makeEntity(reg);
+
+        glm::vec2 point = invader.size;
+        invader.movePoints.push_back(point);
+        float leftX = invader.size.x;
+        float rightX = winSize.x - invader.size.x;
+        float diffY = invader.size.y * 1.5f;
+        for (int i = 0; i < 6; i++) {
+            point.y += diffY;
+            invader.movePoints.push_back(point);
+            point.x = rightX;
+            invader.movePoints.push_back(point);
+            point.y += diffY;
+            invader.movePoints.push_back(point);
+            point.x = leftX;
+            invader.movePoints.push_back(point);
+        }
+        std::reverse(invader.movePoints.begin(), invader.movePoints.end());
+
+        const int countEnemies = winSize.x / (2.5f * invader.size.x); //12;
+        const int widthDiff = winSize.x / countEnemies;
+        invader.pos.y = invader.size.y;
+        invader.pos.x = 0;
+        for (int i = 0; i < countEnemies; i++) {
+            invader.pos.x += widthDiff;
+            invader.makeEntity(reg);
+        }
+
     }
 
     { // walls
@@ -97,5 +122,5 @@ void SpaceInvaders::initEntities()
         // bottom
         wall.pos  = glm::vec2(winCenter.x, winSize.y);
         wall.makeEntity(reg);
-    }    
+    }
 }
