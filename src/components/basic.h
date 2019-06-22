@@ -52,3 +52,7 @@ struct ShiftCollisionCmp {
 
 struct OneShotCollisionCmp {
 };
+
+
+struct DeadCmp {
+};

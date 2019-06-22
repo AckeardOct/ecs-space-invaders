@@ -47,3 +47,10 @@ private:
     void resolveStaticShift(PositionCmp& staticPos, PositionCmp& shiftPos, MoveCmp& shiftMove);
     void resolveShiftShift(PositionCmp& onePos, MoveCmp& oneMove, PositionCmp& twoPos, MoveCmp& twoMove);
 };
+
+
+class SlayerSys : public IBasicSys
+{
+public: // IBasicSys interface
+    virtual void update(entt::registry &reg, float dt) override;
+};

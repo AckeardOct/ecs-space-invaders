@@ -67,8 +67,7 @@ void InputSys::update(entt::registry &reg, float dt)
                 PositionCmp& posCmp = moveView.get<PositionCmp>(et);
                 BulletTpl bullet;
                 bullet.pos = posCmp.pos;
-                bullet.pos += posCmp.direction * (bullet.size/2.f + posCmp.size/2.f);
-                bullet.pos += posCmp.direction * (bullet.size/2.f + posCmp.size/2.f);
+                bullet.pos +=  posCmp.direction * (glm::vec2(1, 1) + bullet.size/2.f + posCmp.size/2.f);
                 bullet.direction = posCmp.direction;
                 bullet.makeEntity(reg);
             }
@@ -93,8 +92,6 @@ void InertionSys::update(entt::registry &reg, float dt)
 
 void CollisionSys::update(entt::registry &reg, float dt)
 {
-    std::set<unsigned int> needDelete;
-
     auto staticView = reg.view<PositionCmp, StaticCollisionCmp>();
     auto shiftView = reg.view<PositionCmp, ShiftCollisionCmp, MoveCmp>();
     auto oneShotView = reg.view<PositionCmp, OneShotCollisionCmp>();
@@ -114,8 +111,8 @@ void CollisionSys::update(entt::registry &reg, float dt)
         for (auto oneShotEnt : oneShotView) {
             PositionCmp& oneShotPosCmp = oneShotView.get<PositionCmp>(oneShotEnt);
             if (isIntesects(onePosCmp, oneShotPosCmp)) {
-                reg.destroy(oneShotEnt);
-                reg.destroy(shiftEntOne);
+                reg.assign_or_replace<DeadCmp>(oneShotEnt);
+                reg.assign_or_replace<DeadCmp>(shiftEntOne);
                 continue;
             }
         }
@@ -133,7 +130,7 @@ void CollisionSys::update(entt::registry &reg, float dt)
         for (auto oneShotEnt : oneShotView) {
             PositionCmp& oneShotPosCmp = oneShotView.get<PositionCmp>(oneShotEnt);
             if (isIntesects(staticPosCmp, oneShotPosCmp)) {
-                reg.destroy(oneShotEnt);
+                reg.assign_or_replace<DeadCmp>(oneShotEnt);
                 continue;
             }
         }                       
@@ -222,4 +219,10 @@ void CollisionSys::resolveShiftShift(PositionCmp &onePos, MoveCmp &oneMove, Posi
         count++;
         assert(count < 1000);
     }
+}
+
+void SlayerSys::update(entt::registry &reg, float dt)
+{
+    auto view = reg.view<DeadCmp>();
+    reg.destroy(view.begin(), view.end());
 }

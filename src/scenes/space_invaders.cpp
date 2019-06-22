@@ -46,6 +46,8 @@ void SpaceInvaders::initBasicSystems()
     basicSystems.push_back(inputSystem);
     basicSystems.push_back(new CollisionSys());
     basicSystems.push_back(new InertionSys());
+
+    basicSystems.push_back(new SlayerSys());
 }
 
 
@@ -74,6 +76,8 @@ void SpaceInvaders::initEntities()
         invader.size = glm::vec2(30, 30);
         invader.pos = winCenter;
         invader.direction = glm::vec2(0.f, 1.f);
+        invader.makeEntity(reg);
+        invader.pos = winCenter / 4.f;
         invader.makeEntity(reg);
     }
 

@@ -8,6 +8,7 @@ project(common)
 set(sources
     game_window.cpp
     texture_bank.cpp
+    utils.cpp
 )
 
 add_library(${PROJECT_NAME} ${sources})

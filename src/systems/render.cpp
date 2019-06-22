@@ -1,10 +1,10 @@
 #include "render.h"
+#include <common/utils.h>
 #include <components/basic.h>
 #include <components/render.h>
 #include <common/texture_bank.h>
 
 #include <SDL2/SDL_render.h>
-
 
 void RectRendSys::update(entt::registry &reg, SDL_Renderer &sdl_renderer)
 {
@@ -47,9 +47,13 @@ void SpriteRendSys::update(entt::registry &reg, SDL_Renderer &sdl_renderer)
         rect.x = (int)posCmp.pos.x - rect.w / 2;
         rect.y = (int)posCmp.pos.y - rect.h / 2;
 
+        float angle_rad = Ut::toAngle(posCmp.direction);
+        float angle_deg = Ut::toDeg(angle_rad);
+
         const Texture* texture = textureBank.getTexture(spriteCmp.spritePath);
         if (texture) {
-            SDL_RenderCopy(&sdl_renderer, texture->sdl_texture, &texture->sdl_rect, &rect);
+            //SDL_RenderCopy(&sdl_renderer, texture->sdl_texture, &texture->sdl_rect, &rect);
+            SDL_RenderCopyEx(&sdl_renderer, texture->sdl_texture, &texture->sdl_rect, &rect, angle_deg, nullptr, SDL_FLIP_NONE);
         }
     }
 }

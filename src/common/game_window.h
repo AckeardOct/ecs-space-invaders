@@ -14,6 +14,7 @@ public:
     GameWindow(int argc, char** argv);
     ~GameWindow();
 
+
     void          runLoop        (void);
     glm::vec2     getSize        (void) const;
     SDL_Renderer& getRenderer    (void);
@@ -24,6 +25,7 @@ private:
     void processInput (float dt);
     void update       (float dt);
     void render       (float dt);
+    void internalTests();
 
 private:
     SDL_Window*   sdl_window    {nullptr};
@@ -32,4 +34,5 @@ private:
     TextureBank*  textureBank   {nullptr};
     IScene*       scene         {nullptr};
     bool          quitRequested {false};
+    bool          needTests     {false};
 };
