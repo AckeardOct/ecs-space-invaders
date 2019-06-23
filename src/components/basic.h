@@ -32,6 +32,14 @@ public:
 
 
 struct GunCmp {
+    int      rapidityOfFire_ms {0};
+    long     lastFire_ms       {0};
+
+    GunCmp(int rapidityOfFire_ms)
+        : rapidityOfFire_ms(rapidityOfFire_ms)
+    { }
+
+    bool isTimeToFire(bool updateTime = false);
 };
 
 
@@ -61,6 +69,10 @@ struct AiRouteCmp {
     AiRouteCmp(std::vector<glm::vec2>& points)
         : points(points)
     { }
+};
+
+
+struct AiGunCmp {
 };
 
 

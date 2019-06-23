@@ -6,7 +6,6 @@
 #include <ents/space_invaders.h>
 
 #include <glm/glm.hpp>
-#include <set>
 
 
 void InputSys::onInput(const SDL_Event &event)
@@ -65,12 +64,15 @@ void InputSys::update(entt::registry &reg, float dt)
     for (auto et : fireView) {
         for (auto ev : events) {
             if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_SPACE) {
-                PositionCmp& posCmp = moveView.get<PositionCmp>(et);
-                BulletTpl bullet;
-                bullet.pos = posCmp.pos;
-                bullet.pos +=  posCmp.direction * (glm::vec2(1, 1) + bullet.size/2.f + posCmp.size/2.f);
-                bullet.direction = posCmp.direction;
-                bullet.makeEntity(reg);
+                GunCmp& gunCmp = fireView.get<GunCmp>(et);
+                if (gunCmp.isTimeToFire(true)) {
+                    PositionCmp& posCmp = fireView.get<PositionCmp>(et);
+                    BulletTpl bullet;
+                    bullet.pos = posCmp.pos;
+                    bullet.pos +=  posCmp.direction * (glm::vec2(1, 1) + bullet.size/2.f + posCmp.size/2.f);
+                    bullet.direction = posCmp.direction;
+                    bullet.makeEntity(reg);
+                }
             }
         }
     }
@@ -258,6 +260,26 @@ void AiRouteSys::update(entt::registry &reg, float dt)
             direction *= -1;
             moveCmp.move(posCmp, direction, dt);
             break;
+        }
+    }
+}
+
+
+void AiFireSys::update(entt::registry &reg, float dt)
+{
+    auto view = reg.view<PositionCmp, AiGunCmp, GunCmp>();
+    for (auto ent : view) {
+        GunCmp& gunCmp = view.get<GunCmp>(ent);
+
+        bool needFire = Ut::getRandomPercentage() < 1.f;
+
+        if (needFire && gunCmp.isTimeToFire(true)) {
+            PositionCmp& posCmp = view.get<PositionCmp>(ent);
+            BulletTpl bullet;
+            bullet.pos = posCmp.pos;
+            bullet.pos +=  posCmp.direction * (glm::vec2(1, 1) + bullet.size/2.f + posCmp.size/2.f);
+            bullet.direction = posCmp.direction;
+            bullet.makeEntity(reg);
         }
     }
 }

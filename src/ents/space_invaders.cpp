@@ -13,9 +13,8 @@ void ShipTpl::makeEntity(entt::registry &reg)
     reg.assign<MoveCmp>(entity, speed);
     reg.assign<ShiftCollisionCmp>(entity);
     reg.assign<InputableCmp>(entity);
-    reg.assign<GunCmp>(entity);
+    reg.assign<GunCmp>(entity, rapidityOfFire_ms);
 }
-
 
 
 void InavaderTpl::makeEntity(entt::registry &reg)
@@ -27,7 +26,8 @@ void InavaderTpl::makeEntity(entt::registry &reg)
     reg.assign<MoveCmp>(entity, speed);
     reg.assign<ShiftCollisionCmp>(entity);
     //reg.assign<InputableCmp>(entity);
-    reg.assign<GunCmp>(entity);
+    reg.assign<GunCmp>(entity, rapidityOfFire_ms);
+    reg.assign<AiGunCmp>(entity);
     reg.assign<AiRouteCmp>(entity, movePoints);
 }
 

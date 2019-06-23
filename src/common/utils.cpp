@@ -1,7 +1,18 @@
 #include "utils.h"
 #include <common/logger.h>
 #include <cmath>
+#include <random>
 #include <SDL2/SDL_test.h>
+
+
+float Ut::getRandomPercentage() {
+    static std::random_device rd;
+    static std::mt19937 mt(rd());
+    static std::uniform_real_distribution<float> dist(0.0f, 100.0f);
+
+    return dist(mt);
+}
+
 
 bool Ut::equal(float one, float two)
 {

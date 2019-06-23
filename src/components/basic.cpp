@@ -1,4 +1,5 @@
 #include "basic.h"
+#include <chrono>
 
 
 void MoveCmp::move(PositionCmp &posCmp, glm::vec2 &direction, float dt) {
@@ -13,4 +14,17 @@ void MoveCmp::move(PositionCmp &posCmp, glm::vec2 &direction, float dt) {
     if ((posCmp.oldPos - posCmp.pos).length() > diff) {
         posCmp.oldPos = tmpPos;
     }
+}
+
+bool GunCmp::isTimeToFire(bool updateTime)
+{
+    auto duration  = std::chrono::system_clock::now().time_since_epoch();
+    auto current_ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    if (current_ms - lastFire_ms > rapidityOfFire_ms) {
+        if (updateTime) {
+            lastFire_ms = current_ms;
+        }
+        return true;
+    }
+    return false;
 }

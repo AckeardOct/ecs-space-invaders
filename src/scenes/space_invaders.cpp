@@ -48,6 +48,7 @@ void SpaceInvaders::initBasicSystems()
     basicSystems.push_back(new CollisionSys());
     basicSystems.push_back(new InertionSys());
     basicSystems.push_back(new AiRouteSys());
+    basicSystems.push_back(new AiFireSys());
 
     basicSystems.push_back(new SlayerSys());
 }

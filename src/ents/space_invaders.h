@@ -18,8 +18,9 @@ struct ShipTpl : public IAbstractEnt
     glm::vec2   pos         {0, 0};
     glm::vec2   direction   {0, 0};
     glm::vec2   speed       {150, 150};
-    glm::ivec4  borderColor {255, 0, 0, 255};
+    glm::ivec4  borderColor {255, 0, 0, 255};    
     const char* spritePath  {"resources/images/pixel_ship.png"};
+    int         rapidityOfFire_ms {100};
 
     virtual void makeEntity(entt::registry &reg) override;
 };
@@ -33,6 +34,7 @@ struct InavaderTpl : public IAbstractEnt
     glm::vec2   speed       {50, 50};
     glm::ivec4  borderColor {255, 0, 0, 255};
     const char* spritePath  {"resources/images/pixel_ship_red_small_2.png"};
+    int         rapidityOfFire_ms {500};
 
     std::vector<glm::vec2> movePoints; // must be reverse
 
