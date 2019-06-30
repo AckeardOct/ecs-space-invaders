@@ -78,3 +78,11 @@ struct AiGunCmp {
 
 struct DeadCmp {
 };
+
+
+struct EnemyCmp {
+};
+
+
+struct PlayerCmp {
+};

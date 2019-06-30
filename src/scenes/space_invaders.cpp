@@ -7,12 +7,48 @@
 #include <ents/space_invaders.h>
 
 
+void GameRule::initCallbacks(entt::registry& reg)
+{
+    reg.on_construct<EnemyCmp>().connect<&GameRule::onConstructEnemy>(this);
+    reg.on_destroy<EnemyCmp>().connect<&GameRule::onDestroyEnemy>(this);
+
+    reg.on_construct<PlayerCmp>().connect<&GameRule::onConstructPlayer>(this);
+    reg.on_destroy<PlayerCmp>().connect<&GameRule::onDestroyPlayer>(this);
+}
+
+
+void GameRule::update()
+{
+    if (enemiesCount <= 0) {
+        LogMsg("YOU WIN");
+        scene.win();
+    } else if (playersCount <= 0) {
+        LogMsg("You losse!");
+        scene.loose();
+    }
+}
+
+
 SpaceInvaders::SpaceInvaders(GameWindow &window)
     : IScene(window)
+    , gameRule(*this)
 {
+    gameRule.initCallbacks(reg);
     initEntities();
     initBasicSystems();
     initRenderSystems();
+}
+
+
+void SpaceInvaders::win()
+{
+    pauseBasicSystems();
+}
+
+
+void SpaceInvaders::loose()
+{
+    pauseBasicSystems();
 }
 
 
@@ -27,8 +63,12 @@ void SpaceInvaders::input(float dt, const SDL_Event &event)
 void SpaceInvaders::update(float dt)
 {
     for (auto sys : basicSystems) {
-        sys->update(reg, dt);
+        if (sys->isEnabled()) {
+            sys->update(reg, dt);
+        }
     }
+
+    gameRule.update();
 }
 
 
@@ -36,7 +76,9 @@ void SpaceInvaders::render(float dt)
 {
     SDL_Renderer& sdl_renderer = window.getRenderer();
     for (auto sys : renderSystems) {
-        sys->update(reg, sdl_renderer);
+        if (sys->isEnabled()) {
+            sys->update(reg, sdl_renderer);
+        }
     }
 }
 
@@ -102,7 +144,7 @@ void SpaceInvaders::initEntities()
         invader.pos.x = 0;
         for (int i = 0; i < countEnemies; i++) {
             invader.pos.x += widthDiff;
-            invader.makeEntity(reg);
+            auto ent = invader.makeEntity(reg);
         }
 
     }
@@ -123,5 +165,13 @@ void SpaceInvaders::initEntities()
         // bottom
         wall.pos  = glm::vec2(winCenter.x, winSize.y);
         wall.makeEntity(reg);
+    }
+}
+
+
+void SpaceInvaders::pauseBasicSystems()
+{
+    for (auto sys : basicSystems) {
+        sys->disable();
     }
 }

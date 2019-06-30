@@ -4,7 +4,7 @@
 #include <components/render.h>
 
 
-void ShipTpl::makeEntity(entt::registry &reg)
+unsigned int ShipTpl::makeEntity(entt::registry &reg)
 {
     auto entity = reg.create();
     reg.assign<PositionCmp>(entity, pos, size, direction);
@@ -14,10 +14,13 @@ void ShipTpl::makeEntity(entt::registry &reg)
     reg.assign<ShiftCollisionCmp>(entity);
     reg.assign<InputableCmp>(entity);
     reg.assign<GunCmp>(entity, rapidityOfFire_ms);
+    reg.assign<PlayerCmp>(entity);
+
+    return entity;
 }
 
 
-void InavaderTpl::makeEntity(entt::registry &reg)
+unsigned int InavaderTpl::makeEntity(entt::registry &reg)
 {
     auto entity = reg.create();
     reg.assign<PositionCmp>(entity, pos, size, direction);
@@ -29,19 +32,24 @@ void InavaderTpl::makeEntity(entt::registry &reg)
     reg.assign<GunCmp>(entity, rapidityOfFire_ms);
     reg.assign<AiGunCmp>(entity);
     reg.assign<AiRouteCmp>(entity, movePoints);
+    reg.assign<EnemyCmp>(entity);
+
+    return entity;
 }
 
 
-void WallTpl::makeEntity(entt::registry &reg)
+unsigned int WallTpl::makeEntity(entt::registry &reg)
 {
     auto entity = reg.create();
     reg.assign<PositionCmp>(entity, pos, size);
     //reg.assign<RectRendCmp>(entity, borderColor, borderColor);
     reg.assign<StaticCollisionCmp>(entity);
+
+    return entity;
 }
 
 
-void BulletTpl::makeEntity(entt::registry& reg)
+unsigned int BulletTpl::makeEntity(entt::registry& reg)
 {
     auto entity = reg.create();
     reg.assign<PositionCmp>(entity, pos, size, direction);
@@ -50,4 +58,6 @@ void BulletTpl::makeEntity(entt::registry& reg)
     reg.assign<MoveCmp>(entity, speed);
     reg.assign<InertionCmp>(entity);
     reg.assign<OneShotCollisionCmp>(entity);
+
+    return entity;
 }

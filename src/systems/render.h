@@ -10,6 +10,12 @@ class IRenderSys
 {
 public:
     virtual void update(entt::registry &reg, SDL_Renderer& sdl_renderer) = 0;
+    bool         isEnabled () { return !isPaused; }
+    void         enable    () { isPaused = false; }
+    void         disable   () { isPaused = true;  }
+
+private:
+    bool isPaused = false;
 };
 
 
